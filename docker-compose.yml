@@ -45,9 +45,9 @@ services:                           ##php-fpm services
       - site1
     volumes: 
       - ./app:/app
-      - ./docker/php-fpm/log-site1-php1:/var/log/phplog
+      - ./docker/php-fpm/log:/var/log/phplog
       - ./docker/php-fpm/custom-php.ini:/opt/bitnami/php/etc/conf.d/custom-php.ini
-      - ./docker/php-fpm/custom-phpfpm.conf:/opt/bitnami/php/etc/php-fpm.d/phpfpm.conf
+      - ./docker/php-fpm/custom-phpfpm-1.conf:/opt/bitnami/php/etc/php-fpm.d/phpfpm.conf
     working_dir: /app
 
   phpfpm2:
@@ -58,9 +58,9 @@ services:                           ##php-fpm services
       - site1
     volumes: 
       - ./app:/app
-      - ./docker/php-fpm/log-site1-php2:/var/log/phplog
+      - ./docker/php-fpm/log:/var/log/phplog
       - ./docker/php-fpm/custom-php.ini:/opt/bitnami/php/etc/conf.d/custom-php.ini
-      - ./docker/php-fpm/custom-phpfpm.conf:/opt/bitnami/php/etc/php-fpm.d/phpfpm.conf
+      - ./docker/php-fpm/custom-phpfpm-2.conf:/opt/bitnami/php/etc/php-fpm.d/phpfpm.conf
     working_dir: /app
 
   phpfpm3:
@@ -71,9 +71,9 @@ services:                           ##php-fpm services
       - site1
     volumes: 
       - ./app:/app
-      - ./docker/php-fpm/log-site1-php3:/var/log/phplog
+      - ./docker/php-fpm/log:/var/log/phplog
       - ./docker/php-fpm/custom-php.ini:/opt/bitnami/php/etc/conf.d/custom-php.ini
-      - ./docker/php-fpm/custom-phpfpm.conf:/opt/bitnami/php/etc/php-fpm.d/phpfpm.conf
+      - ./docker/php-fpm/custom-phpfpm-3.conf:/opt/bitnami/php/etc/php-fpm.d/phpfpm.conf
     working_dir: /app
 
   # php4_site2:
