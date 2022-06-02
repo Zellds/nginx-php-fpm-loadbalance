@@ -1,3 +1,3 @@
 <?php
 
-echo "bla bla bla";
+echo "End!";
