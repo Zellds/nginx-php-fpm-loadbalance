@@ -5,17 +5,22 @@ networks:
     driver: bridge
   site2:
     driver: bridge
+  php-site1:
+    driver: bridge
+  php-site2:
+    driver: bridge
 
-services:                           ##php-fpm services
+services:
 
   proxy:
     image: meu-proxy:latest
     build:
       context: .
-      dockerfile: docker/nginx/Dockerfile-nginx
+      dockerfile: docker/nginx/Dockerfile
     container_name: proxy
     networks:
       - site1
+      - site2
     volumes:
       - ./docker/nginx/log:/var/log/nginx
       - ./docker/nginx/proxy.conf:/opt/bitnami/nginx/conf/server_blocks/proxy.conf
@@ -23,26 +28,15 @@ services:                           ##php-fpm services
       - 80:8080
     depends_on:
       - site1
-      - phpfpm
+      - site2-loadbalance1
+      - site2-loadbalance2
 
-  site1:                           ##nginx services
-    image: bitnami/nginx:latest
-    container_name: site1
-    networks:
-      - site1
-    depends_on:
-      - phpfpm
-    volumes:
-      - ./app:/app
-      - ./docker/nginx/site1.conf:/opt/bitnami/nginx/conf/server_blocks/site.conf
-    working_dir: /app
-
-  phpfpm:
+  phpfpm:                          ##PHP-FPM Services
     image: bitnami/php-fpm:latest
     user: 1000:1000
     container_name: phpfpm
     networks:
-      - site1
+      - php-site1
     volumes: 
       - ./app:/app
       - ./docker/php-fpm/log:/var/log/phplog
@@ -55,7 +49,7 @@ services:                           ##php-fpm services
     user: 1000:1000
     container_name: phpfpm2
     networks:
-      - site1
+      - php-site1
     volumes: 
       - ./app:/app
       - ./docker/php-fpm/log:/var/log/phplog
@@ -68,7 +62,7 @@ services:                           ##php-fpm services
     user: 1000:1000
     container_name: phpfpm3
     networks:
-      - site1
+      - php-site1
     volumes: 
       - ./app:/app
       - ./docker/php-fpm/log:/var/log/phplog
@@ -76,31 +70,48 @@ services:                           ##php-fpm services
       - ./docker/php-fpm/custom-phpfpm-3.conf:/opt/bitnami/php/etc/php-fpm.d/phpfpm.conf
     working_dir: /app
 
-  # php4_site2:
-  #   image: bitnami/php-fpm:latest
-  #   container_name: php4_site2
-  #   networks:
-  #     - site2
-  #   volumes:
-  #     - ./app:/app
+  php-site2:
+    image: bitnami/php-fpm:latest
+    container_name: php-site2
+    user: 1000:1000
+    networks:
+      - php-site2
+    volumes:
+      - ./app:/app
+      - ./docker/php-fpm/log:/var/log/phplog
+      - ./docker/php-fpm/custom-php.ini:/opt/bitnami/php/etc/conf.d/custom-php.ini
+      - ./docker/php-fpm/custom-phpfpm-site2.conf:/opt/bitnami/php/etc/php-fpm.d/phpfpm.conf
+    working_dir: /app
+  
+  site1:                           ##NGINX Services
+    image: bitnami/nginx:latest
+    container_name: site1
+    networks:
+      - site1
+      - php-site1
+    depends_on:
+      - phpfpm
+    volumes:
+      - ./app:/app
+      - ./docker/nginx/site1.conf:/opt/bitnami/nginx/conf/server_blocks/site.conf
+    working_dir: /app
 
+  site2-loadbalance1:
+    image: nginx:alpine
+    container_name: site2-loadbalance1
+    networks:
+      - site2
+      - php-site2
+    volumes:
+      - ./app:/app
+      - ./docker/nginx/site2-loadbalance1.conf:/etc/nginx/conf.d/z-overrides.conf
 
-
-  # nginx-2:
-  #   image: nginx:alpine
-  #   container_name: nginx-2
-  #   networks:
-  #     - site2
-  #   volumes:
-  #     - ./app:/app
-  #     - ./docker/nginx/site2.conf:/etc/nginx/conf.d/z-overrides.conf
-
-  # nginx-3:
-  #   image: nginx:alpine
-  #   container_name: nginx-3
-  #   networks:
-  #     - site2
-  #   volumes:
-  #     - ./app:/app
-  #     - ./docker/nginx/site3.conf:/etc/nginx/conf.d/z-overrides.conf
-
+  site2-loadbalance2:
+    image: nginx:alpine
+    container_name: site2-loadbalance2
+    networks:
+      - site2
+      - php-site2
+    volumes:
+      - ./app:/app
+      - ./docker/nginx/site2-loadbalance2.conf:/etc/nginx/conf.d/z-overrides.conf
