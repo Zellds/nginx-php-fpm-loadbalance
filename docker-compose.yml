@@ -85,7 +85,8 @@ services:
   
   site1:                           ##NGINX Services
     image: bitnami/nginx:latest
-    container_name: site1
+    container_name: site4
+    user: 0:0
     networks:
       - site1
       - php-site1
@@ -93,6 +94,7 @@ services:
       - phpfpm
     volumes:
       - ./app:/app
+      - ./docker/nginx/log:/var/log/nginx
       - ./docker/nginx/site1.conf:/opt/bitnami/nginx/conf/server_blocks/site.conf
     working_dir: /app
 
@@ -104,6 +106,7 @@ services:
       - php-site2
     volumes:
       - ./app:/app
+      - ./docker/nginx/log:/var/log/nginx
       - ./docker/nginx/site2-loadbalance1.conf:/etc/nginx/conf.d/z-overrides.conf
 
   site2-loadbalance2:
@@ -114,4 +117,5 @@ services:
       - php-site2
     volumes:
       - ./app:/app
+      - ./docker/nginx/log:/var/log/nginx
       - ./docker/nginx/site2-loadbalance2.conf:/etc/nginx/conf.d/z-overrides.conf
