@@ -85,7 +85,7 @@ services:
   
   site1:                           ##NGINX Services
     image: bitnami/nginx:latest
-    container_name: site4
+    container_name: site1
     user: 0:0
     networks:
       - site1
