@@ -1,4 +1,4 @@
-# nginx-php-fpm-loadbalance
+### Brincando com nginx e seu balanceamento de carga
 
 ```mermaid
   graph TD;
@@ -14,4 +14,3 @@
       Site2-loadbalance1-->Php-fpm;
       Site2-loadbalance2-->Php-fpm;
 ```
-
